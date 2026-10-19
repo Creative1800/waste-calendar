@@ -436,11 +436,12 @@ function downloadTestEvent() {
         description: [
           `Testovacia udalosť. Overte, či upozornenie prišlo dnes o ${time}.`,
           '',
-          'Ak neprišlo, nastavte pri tomto kalendári upozornenie',
-          `„1 deň predtým, ${time}“ v aplikácii na svojom telefóne —`,
-          'Google upozornenia zo súboru spoľahlivo nepreberá.',
+          'Google pri importe zahodí upozornenie z tohto súboru a použije',
+          'nastavenie kalendára. Nastavte si preto pri kalendári upozornenie',
+          `„1 deň predtým, ${time}“ v aplikácii na svojom telefóne.`,
           '',
-          'Túto udalosť potom zmažte.',
+          'Keď upozornenie príde, vráťte nastavenie na 18:00 a túto udalosť',
+          'zmažte.',
         ].join('\n'),
         uid: `sabinov-test-${Date.now()}@waste-calendar.sabinov`,
       },
@@ -448,6 +449,34 @@ function downloadTestEvent() {
     { calendarName: 'Zber odpadu — test', alarmTrigger: trigger },
   );
   download('zber-odpadu-test.ics', ics);
+  showTestSteps(time);
+}
+
+/**
+ * Spells out the manual step the file cannot do for you.
+ *
+ * Google Calendar discards an imported event's own alarm and applies the
+ * destination calendar's default notification instead. For the yearly calendar
+ * that is exactly right -- each person sets their preference once and every
+ * collection inherits it. It only gets in the way here, where the whole point
+ * is to make a reminder fire within the next few minutes, so the time has to
+ * be set on the calendar by hand.
+ *
+ * @param {string} time "HH:MM" chosen for the test
+ */
+function showTestSteps(time) {
+  const box = $('test-steps');
+  box.hidden = false;
+  box.innerHTML = `<strong>Súbor stiahnutý. Ďalej:</strong>
+    <ol>
+      <li>Naimportujte ho do kalendára „Zber odpadu“.</li>
+      <li>Pri tomto kalendári nastavte upozornenie
+          <strong>„1 deň predtým, ${time}“</strong>. Google pri importe zahodí
+          upozornenie zo súboru a použije nastavenie kalendára — preto ho treba
+          nastaviť ručne.</li>
+      <li>Počkajte na ${time}. Keď upozornenie príde, vráťte nastavenie späť na
+          <strong>18:00</strong> a testovaciu udalosť zmažte.</li>
+    </ol>`;
 }
 
 // -- wiring ----------------------------------------------------------------

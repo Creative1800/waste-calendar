@@ -27,14 +27,21 @@ account sync.
 2. **Settings → Import & export → Import**, choose the `.ics`, and set the
    destination to that new calendar.
 3. Each person sets a **"1 day before, 18:00"** notification on that calendar in
-   their own app. Notification settings in Google Calendar are *personal* — your
-   setting does not propagate to anyone else, and alarms embedded in the file are
-   honoured by Apple Calendar but not reliably by Google.
+   their own app. This is required, not a fallback: **Google discards the alarm
+   carried in the imported file and applies the destination calendar's default
+   notification instead** (confirmed on import, 19 October 2026). For the yearly
+   calendar that is the behaviour we want — set the preference once and every
+   collection inherits it — but it does mean nobody can skip the step.
+   Notification settings in Google Calendar are also *personal*: your setting
+   does not propagate to anyone else. Apple Calendar does honour the embedded
+   alarm, which is why the file still carries one.
 4. Before importing a full year, use **"Stiahnuť testovaciu udalosť"** to import
    a single test event and confirm the alarm actually arrives on every phone.
-   The time box next to the button sets when it fires today, so the check takes
-   minutes rather than waiting until evening. Checked on 19 October 2026: the
-   test reminder arrived on Samsung Calendar.
+   Because Google substitutes its own notification, the time box next to the
+   button does not set when the reminder fires — it tells you which time to set
+   on the calendar, and the tool spells out the steps after the download.
+   Verified on 19 October 2026: with the calendar's notification set to that
+   time, the reminder arrived on Samsung Calendar.
 
 One shared Google calendar renders natively in the Google Calendar app, in
 iPhone's built-in Calendar (once the Google account is added in iOS Settings →

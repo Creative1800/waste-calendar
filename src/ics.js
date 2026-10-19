@@ -4,8 +4,10 @@
  *
  * Events are all-day on the collection day, with an alarm six hours before
  * midnight -- i.e. 18:00 the previous evening. Apple Calendar honours that
- * alarm on import; Google is unreliable about it, which is why each person
- * also sets a per-calendar default reminder. Belt and braces.
+ * alarm on import. Google does not: it discards it and applies the destination
+ * calendar's own default notification (confirmed on import, 19 October 2026),
+ * which is why each person must set a per-calendar reminder of their own. The
+ * alarm stays in the file for the calendars that do read it.
  *
  * @typedef {{date: string, title: string, description: string, uid: string}} CalEvent
  */
