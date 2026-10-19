@@ -22,6 +22,11 @@ account sync.
 
 ## Import and reminders
 
+**Import on a computer, not on a phone.** Opening the `.ics` on a phone hands
+it to whatever calendar app claims the file type, which may file the events in
+a phone-local calendar: it looks right on that phone, syncs nowhere, and shares
+with nobody. This happened on the first attempt, 19 October 2026.
+
 1. In Google Calendar on a computer, create a **new calendar** (e.g. "Zber
    odpadu") and share it with the household.
 2. **Settings → Import & export → Import**, choose the `.ics`, and set the
