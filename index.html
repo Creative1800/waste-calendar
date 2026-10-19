@@ -95,7 +95,7 @@
   td.day { color: var(--muted); white-space: nowrap; }
   tr.past { opacity: 0.45; }
   tr.renewal td { color: var(--warn-text); background: var(--warn-bg); }
-  input[type=date], select {
+  input.date, select {
     font: inherit;
     padding: 4px 6px;
     border: 1px solid var(--line);
@@ -103,6 +103,29 @@
     background: var(--bg);
     color: var(--text);
   }
+  input.date {
+    width: 7.2em;
+    font-variant-numeric: tabular-nums;
+  }
+  input.date.invalid {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  h3 + .hint { color: var(--muted); font-size: 0.875rem; margin: 0 0 10px; }
+  .grid-wrap { overflow-x: auto; margin-bottom: 26px; }
+  table.grid th.month { text-align: left; white-space: nowrap; }
+  table.grid td.type { white-space: nowrap; font-weight: 600; }
+  table.grid td.days { font-variant-numeric: tabular-nums; }
+  table.grid tr.off { opacity: 0.38; }
+  table.grid td.empty { color: var(--muted); }
   .chips { display: flex; flex-wrap: wrap; gap: 4px; }
   .chip {
     display: inline-flex;
@@ -191,6 +214,24 @@
     <h2>4 — Kontrola dátumov</h2>
     <p class="stats" id="stats"></p>
     <div id="warnings"></div>
+
+    <h3>Ako v letáku</h3>
+    <p class="hint">
+      Rovnaká tabuľka ako v PDF — položte si leták vedľa a porovnajte riadok po
+      riadku. Zobrazené sú všetky druhy odpadu; nesledované sú zosvetlené.
+    </p>
+    <div class="grid-wrap">
+      <table class="grid">
+        <thead><tr id="grid-head"></tr></thead>
+        <tbody id="grid-body"></tbody>
+      </table>
+    </div>
+
+    <h3>Opraviť dátumy</h3>
+    <p class="hint">
+      Dátum píšte ako <code>13.10.2026</code> (rok môžete vynechať). Zmeny sa
+      hneď prejavia v tabuľke vyššie.
+    </p>
     <table>
       <thead>
         <tr><th>Dátum</th><th>Deň</th><th>Zber</th></tr>
@@ -198,7 +239,8 @@
       <tbody id="rows"></tbody>
     </table>
     <div class="add">
-      <input type="date" id="add-date" aria-label="Dátum nového zberu">
+      <input type="text" class="date" id="add-date" inputmode="numeric"
+             placeholder="13.10.2026" aria-label="Dátum nového zberu">
       <select id="add-type" aria-label="Druh odpadu"></select>
       <button class="small" id="add-btn" type="button">Pridať zber</button>
     </div>

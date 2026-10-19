@@ -6,6 +6,8 @@
  * date in the parsed data, so they can never drift out of step with it.
  */
 
+import { formatSk } from './sk-date.js';
+
 /** Where the city publishes each new leaflet. */
 export const CITY_NEWS_URL = 'https://www.sabinov.sk/navstevnik/aktuality';
 
@@ -55,14 +57,4 @@ export function renewalEvents(lastCollectionDate, options = {}) {
         : 'Ďalšia pripomienka príde neskôr.',
     ].join('\n'),
   }));
-}
-
-/**
- * Formats an ISO date the Slovak way, "31.12.2026".
- * @param {string} isoDate
- * @returns {string}
- */
-export function formatSk(isoDate) {
-  const [y, m, d] = isoDate.split('-');
-  return `${Number(d)}.${Number(m)}.${y}`;
 }

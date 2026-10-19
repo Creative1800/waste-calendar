@@ -12,7 +12,9 @@
 import { extractTextItems } from './pdf-text.js';
 import { parseSchedule, WASTE_TYPES } from './parse-schedule.js';
 import { groupByDate } from './group-events.js';
-import { WASTE_LABELS, eventTitle } from './labels.js';
+import { buildGrid } from './grid.js';
+import { formatSk, parseSk } from './sk-date.js';
+import { WASTE_LABELS, MONTH_NAMES_SK, eventTitle } from './labels.js';
 import { buildCalendar } from './build-calendar.js';
 import { buildIcs } from './ics.js';
 
@@ -42,11 +44,12 @@ function weekday(isoDate) {
 }
 
 /**
- * @param {string} isoDate
+ * Reads Slovak date text, filling in the leaflet's year when it is omitted.
+ * @param {string} text
+ * @returns {string|null}
  */
-function formatSk(isoDate) {
-  const [y, m, d] = isoDate.split('-');
-  return `${Number(d)}.${Number(m)}.${y}`;
+function readDate(text) {
+  return parseSk(text, { year: state.schedule?.year ?? null });
 }
 
 /**
@@ -159,7 +162,45 @@ function renderTypeFilters() {
   ).join('');
 }
 
+/**
+ * The leaflet-shaped view: types down the side, months across. Shows every
+ * waste type regardless of the filter, because its job is to be compared
+ * against the printed leaflet; excluded types are greyed instead of dropped.
+ */
+function renderGrid() {
+  const grid = buildGrid(state.collections);
+  const head = $('grid-head');
+  const body = $('grid-body');
+
+  head.innerHTML =
+    '<th></th>' +
+    grid.months
+      .map(
+        (m) =>
+          `<th class="month">${MONTH_NAMES_SK[m.month]}${
+            grid.months.some((o) => o.year !== m.year) ? ` ${m.year}` : ''
+          }</th>`,
+      )
+      .join('');
+
+  body.innerHTML = grid.rows
+    .map((row) => {
+      const { emoji, name } = WASTE_LABELS[row.type];
+      const cells = row.cells
+        .map((days) =>
+          days.length
+            ? `<td class="days">${days.join(', ')}</td>`
+            : '<td class="days empty">—</td>',
+        )
+        .join('');
+      return `<tr class="${state.include.has(row.type) ? '' : 'off'}">
+        <td class="type">${emoji} ${name}</td>${cells}</tr>`;
+    })
+    .join('');
+}
+
 function renderPreview() {
+  renderGrid();
   const days = groupByDate(state.collections, { include: [...state.include] });
   const built = currentCalendar();
   const tbody = $('rows');
@@ -173,15 +214,22 @@ function renderPreview() {
     const tr = document.createElement('tr');
     if (day.date < today) tr.className = 'past';
     tr.innerHTML = `
-      <td><input type="date" value="${day.date}" aria-label="Dátum zberu"></td>
+      <td><input type="text" class="date" inputmode="numeric"
+                 value="${formatSk(day.date)}" aria-label="Dátum zberu"></td>
       <td class="day">${weekday(day.date)}</td>
       <td><div class="chips"></div></td>`;
 
     const dateInput = /** @type {HTMLInputElement} */ (tr.querySelector('input'));
+    // Mark bad text red while it is being typed, but only move the collection
+    // once the field is left or Enter pressed -- re-rendering mid-keystroke
+    // would pull the input out from under the cursor.
+    dateInput.addEventListener('input', () => {
+      dateInput.classList.toggle('invalid', readDate(dateInput.value) === null);
+    });
     dateInput.addEventListener('change', () => {
-      const next = dateInput.value;
-      if (!next) {
-        renderPreview();
+      const next = readDate(dateInput.value);
+      if (next === null) {
+        dateInput.classList.add('invalid');
         return;
       }
       for (const c of state.collections) {
@@ -356,11 +404,13 @@ fileInput.addEventListener('change', () => {
 $('add-btn').addEventListener('click', () => {
   const dateInput = /** @type {HTMLInputElement} */ ($('add-date'));
   const typeSelect = /** @type {HTMLSelectElement} */ ($('add-type'));
-  const date = dateInput.value;
-  if (!date) {
-    showProblem('Zadajte dátum nového zberu.');
+  const date = readDate(dateInput.value);
+  if (date === null) {
+    dateInput.classList.add('invalid');
+    showProblem('Zadajte dátum nového zberu v tvare 13.10.2026.');
     return;
   }
+  dateInput.classList.remove('invalid');
   showProblem(null);
   const type = /** @type {WasteType} */ (typeSelect.value);
   if (!state.collections.some((c) => c.date === date && c.type === type)) {

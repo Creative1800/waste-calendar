@@ -41,6 +41,10 @@ Calendar), and in Samsung Calendar.
 
 - One all-day event per collection day. Types collected on the same day merge
   into a single event, so `🟢 Sklo + 🟤 Bio` is one notification, not two.
+- A check screen in two halves: the same type × month table the leaflet prints,
+  for reading next to the paper copy, and an editable list below it for fixing
+  anything wrong. Both show dates as `13.10.2026`, and the table redraws from
+  your edits, so it always reflects what will be exported.
 - Two reminders to fetch the next leaflet, placed 24 and 10 days before the last
   collection in the PDF. They are derived from the parsed data, so they cannot
   drift out of step with it.
@@ -61,7 +65,7 @@ A web server is needed even locally: browsers refuse to load ES modules from
 `file://` URLs, so opening `index.html` by double-clicking will not work.
 
 ```sh
-npm test           # 28 unit tests, no browser needed
+npm test           # 44 unit tests, no browser needed
 npm run typecheck  # tsc over the JSDoc types
 npm run fixture    # re-extract the test fixture from the sample PDF
 node tools/generate.mjs T2   # generate an .ics from the fixture, no browser
@@ -76,7 +80,9 @@ node tools/generate.mjs T2   # generate an .ics from the fixture, no browser
 | `src/parse-schedule.js` | text items → routes, streets and dates. **Pure** |
 | `src/group-events.js` | merges same-day collections. **Pure** |
 | `src/renewal.js` | builds the "leaflet runs out" reminders. **Pure** |
-| `src/labels.js` | Slovak names, bin colours, descriptions |
+| `src/grid.js` | rearranges dates into the leaflet's type × month table. **Pure** |
+| `src/sk-date.js` | Slovak date text, both directions. **Pure** |
+| `src/labels.js` | Slovak names, month names, bin colours, descriptions |
 | `src/build-calendar.js` | assembles the final event list. **Pure** |
 | `src/ics.js` | events → RFC 5545 text. **Pure** |
 | `src/app.js` | UI glue only — no parsing or calendar logic |

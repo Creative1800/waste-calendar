@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { parseSchedule } from '../src/parse-schedule.js';
 import { groupByDate } from '../src/group-events.js';
-import { renewalEvents, formatSk } from '../src/renewal.js';
+import { renewalEvents } from '../src/renewal.js';
 import { buildIcs, foldLine, escapeText } from '../src/ics.js';
 import { buildCalendar } from '../src/build-calendar.js';
 import { eventTitle } from '../src/labels.js';
@@ -79,8 +79,9 @@ test('a renewal reminder is dropped if it would predate the schedule', () => {
   );
 });
 
-test('formatSk renders dates the Slovak way', () => {
-  assert.equal(formatSk('2026-01-05'), '5.1.2026');
+test('renewal reminders write the date zero-padded, as the leaflet does', () => {
+  const [nag] = renewalEvents('2026-01-05', { leadDays: [1] });
+  assert.ok(nag.description.includes('05.01.2026'));
 });
 
 // -- ics --------------------------------------------------------------------

@@ -36,6 +36,27 @@ export const WASTE_LABELS = {
 };
 
 /**
+ * Month names as the leaflet prints them, indexed 1-12 so a month number can
+ * be looked up directly. `Intl` would give these in the wrong case ("október")
+ * for a column heading.
+ * @type {Record<number, string>}
+ */
+export const MONTH_NAMES_SK = {
+  1: 'Január',
+  2: 'Február',
+  3: 'Marec',
+  4: 'Apríl',
+  5: 'Máj',
+  6: 'Jún',
+  7: 'Júl',
+  8: 'August',
+  9: 'September',
+  10: 'Október',
+  11: 'November',
+  12: 'December',
+};
+
+/**
  * Builds the event title, e.g. "🟢 Sklo + 🟤 Bio".
  * @param {WasteType[]} types
  * @returns {string}
