@@ -55,16 +55,8 @@ test('Trasa 2 has 27 collections across 25 distinct days', () => {
 // -- titles -----------------------------------------------------------------
 
 test('event titles are Slovak and colour-coded by bin', () => {
-  assert.equal(eventTitle(['SKLO', 'BIO']), 'Zber odpadu: 🟢 Sklo + 🟤 Bio');
-  assert.equal(eventTitle(['TKO']), 'Zber odpadu: 🗑️ Komunálny odpad');
-});
-
-// Whatever lands on a phone comes from this calendar, so every title says so
-// up front -- a notification reading only "🟤 Bio" does not explain itself.
-test('every event title is prefixed with the calendar it came from', () => {
-  const { events } = buildCalendar(schedule, 'T2');
-  const unprefixed = events.filter((e) => !e.title.startsWith('Zber odpadu: '));
-  assert.deepEqual(unprefixed, [], 'these titles lack the prefix');
+  assert.equal(eventTitle(['SKLO', 'BIO']), '🟢 Sklo + 🟤 Bio');
+  assert.equal(eventTitle(['TKO']), '🗑️ Komunálny odpad');
 });
 
 // The renewal reminders used to be told apart by their ⚠️ prefix, which any

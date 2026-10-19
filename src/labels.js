@@ -60,23 +60,19 @@ export const MONTH_NAMES_SK = {
 };
 
 /**
- * Every title this calendar produces starts with this, so a notification on a
- * phone says what it is before it says what bin. Without it a lock screen
- * reads just "🟤 Bio", which means nothing to anyone who has forgotten the
- * calendar exists -- which is everyone, most of the year.
- */
-export const TITLE_PREFIX = 'Zber odpadu: ';
-
-/**
- * Builds the event title, e.g. "Zber odpadu: 🟢 Sklo + 🟤 Bio".
+ * Builds the event title, e.g. "🟢 Sklo + 🟤 Bio".
+ *
+ * No calendar name in front: the events live in a calendar called "Zber
+ * odpadu" and phones show which calendar an event belongs to, so a prefix
+ * would only repeat it and eat the width a notification has for the bins.
+ *
  * @param {WasteType[]} types
  * @returns {string}
  */
 export function eventTitle(types) {
-  return (
-    TITLE_PREFIX +
-    types.map((t) => `${WASTE_LABELS[t].emoji} ${WASTE_LABELS[t].name}`).join(' + ')
-  );
+  return types
+    .map((t) => `${WASTE_LABELS[t].emoji} ${WASTE_LABELS[t].name}`)
+    .join(' + ');
 }
 
 /**

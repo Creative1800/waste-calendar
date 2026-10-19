@@ -7,7 +7,6 @@
  */
 
 import { formatSk } from './sk-date.js';
-import { TITLE_PREFIX } from './labels.js';
 
 /** Where the city publishes each new leaflet. */
 export const CITY_NEWS_URL = 'https://www.sabinov.sk/navstevnik/aktuality';
@@ -54,9 +53,7 @@ export function renewalEvents(lastCollectionDate, options = {}) {
 
   return [...new Set(dates)].map((date, index, all) => ({
     date,
-    // Shortened from "Kalendár zberu odpadu sa končí": the prefix already
-    // names the calendar, and saying it twice wastes a notification's width.
-    title: `${TITLE_PREFIX}⚠️ Kalendár sa končí`,
+    title: '⚠️ Kalendár zberu odpadu sa končí',
     description: [
       `Posledný zber podľa súčasného kalendára je ${formatSk(lastCollectionDate)}.`,
       '',
