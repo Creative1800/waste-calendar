@@ -10,6 +10,13 @@
  * @typedef {import('./parse-schedule.js').Schedule} Schedule
  * @typedef {import('./parse-schedule.js').WasteType} WasteType
  * @typedef {import('./ics.js').CalEvent} CalEvent
+ *
+ * Events carry what they are rather than leaving it to be inferred from their
+ * title. The preview used to spot the reminders by their "⚠️" prefix, which
+ * made the wording of a notification load-bearing: renaming it would have
+ * silently emptied that part of the screen.
+ *
+ * @typedef {CalEvent & {kind: 'collection'|'renewal'}} BuiltEvent
  */
 
 import { groupByDate } from './group-events.js';
@@ -34,7 +41,7 @@ function uidFor(routeId, isoDate, kind) {
  * @param {Schedule} schedule
  * @param {string} routeId e.g. "T2"
  * @param {{include?: WasteType[], withRenewal?: boolean}} [options]
- * @returns {{events: CalEvent[], calendarName: string, dayCount: number, collectionCount: number}}
+ * @returns {{events: BuiltEvent[], calendarName: string, dayCount: number, collectionCount: number}}
  */
 export function buildCalendar(schedule, routeId, options = {}) {
   const route = schedule.routes.find((r) => r.id === routeId);
@@ -49,9 +56,10 @@ export function buildCalendar(schedule, routeId, options = {}) {
   // happen to track every bin in it.
   const leafletDays = groupByDate(route.collections);
 
-  /** @type {CalEvent[]} */
+  /** @type {BuiltEvent[]} */
   const events = days.map((day) => ({
     date: day.date,
+    kind: /** @type {const} */ ('collection'),
     title: eventTitle(day.types),
     description: eventDescription(day.types, route.label),
     uid: uidFor(route.id, day.date),
@@ -65,6 +73,7 @@ export function buildCalendar(schedule, routeId, options = {}) {
     });
     for (const nag of nags) {
       events.push({
+        kind: /** @type {const} */ ('renewal'),
         date: nag.date,
         title: nag.title,
         description: nag.description,

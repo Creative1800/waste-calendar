@@ -9,9 +9,12 @@
 /** @type {Record<WasteType, {name: string, emoji: string, note: string}>} */
 export const WASTE_LABELS = {
   TKO: {
-    name: 'TKO',
+    name: 'Komunálny odpad',
+    // The leaflet's own row heading is "TKO", so the abbreviation is kept here
+    // for anyone matching the two up. The key stays TKO because that is what
+    // the parser reads off the page.
+    note: 'Zmesový komunálny odpad (TKO)',
     emoji: '🗑️',
-    note: 'Zmesový komunálny odpad',
   },
   PLASTY: {
     name: 'Plasty',
@@ -57,14 +60,23 @@ export const MONTH_NAMES_SK = {
 };
 
 /**
- * Builds the event title, e.g. "🟢 Sklo + 🟤 Bio".
+ * Every title this calendar produces starts with this, so a notification on a
+ * phone says what it is before it says what bin. Without it a lock screen
+ * reads just "🟤 Bio", which means nothing to anyone who has forgotten the
+ * calendar exists -- which is everyone, most of the year.
+ */
+export const TITLE_PREFIX = 'Zber odpadu: ';
+
+/**
+ * Builds the event title, e.g. "Zber odpadu: 🟢 Sklo + 🟤 Bio".
  * @param {WasteType[]} types
  * @returns {string}
  */
 export function eventTitle(types) {
-  return types
-    .map((t) => `${WASTE_LABELS[t].emoji} ${WASTE_LABELS[t].name}`)
-    .join(' + ');
+  return (
+    TITLE_PREFIX +
+    types.map((t) => `${WASTE_LABELS[t].emoji} ${WASTE_LABELS[t].name}`).join(' + ')
+  );
 }
 
 /**

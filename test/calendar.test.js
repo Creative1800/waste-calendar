@@ -55,8 +55,27 @@ test('Trasa 2 has 27 collections across 25 distinct days', () => {
 // -- titles -----------------------------------------------------------------
 
 test('event titles are Slovak and colour-coded by bin', () => {
-  assert.equal(eventTitle(['SKLO', 'BIO']), '🟢 Sklo + 🟤 Bio');
-  assert.equal(eventTitle(['TKO']), '🗑️ TKO');
+  assert.equal(eventTitle(['SKLO', 'BIO']), 'Zber odpadu: 🟢 Sklo + 🟤 Bio');
+  assert.equal(eventTitle(['TKO']), 'Zber odpadu: 🗑️ Komunálny odpad');
+});
+
+// Whatever lands on a phone comes from this calendar, so every title says so
+// up front -- a notification reading only "🟤 Bio" does not explain itself.
+test('every event title is prefixed with the calendar it came from', () => {
+  const { events } = buildCalendar(schedule, 'T2');
+  const unprefixed = events.filter((e) => !e.title.startsWith('Zber odpadu: '));
+  assert.deepEqual(unprefixed, [], 'these titles lack the prefix');
+});
+
+// The renewal reminders used to be told apart by their ⚠️ prefix, which any
+// change to the titles would quietly break.
+test('renewal events are identified by kind, not by their title text', () => {
+  const { events } = buildCalendar(schedule, 'T2');
+  assert.deepEqual(
+    events.filter((e) => e.kind === 'renewal').map((e) => e.date),
+    ['2026-12-07', '2026-12-21'],
+  );
+  assert.equal(events.filter((e) => e.kind === 'collection').length, 25);
 });
 
 // -- renewal ----------------------------------------------------------------
@@ -148,7 +167,7 @@ test('building Trasa 2 produces 25 collection events plus 2 renewal nags', () =>
   assert.equal(collectionCount, 27);
   assert.equal(events.length, 27, '25 collection days + 2 renewal reminders');
 
-  const renewals = events.filter((e) => e.title.startsWith('⚠️'));
+  const renewals = events.filter((e) => e.kind === 'renewal');
   assert.deepEqual(
     renewals.map((e) => e.date),
     ['2026-12-07', '2026-12-21'],
@@ -163,7 +182,7 @@ test('renewal reminders are anchored to the leaflet, not to the type filter', ()
     include: ['TKO', 'PLASTY', 'PAPIER', 'SKLO'],
   });
   const renewalDates = (/** @type {typeof all} */ built) =>
-    built.events.filter((e) => e.title.startsWith('⚠️')).map((e) => e.date);
+    built.events.filter((e) => e.kind === 'renewal').map((e) => e.date);
 
   // Bio is what runs to 31.12; without it the last tracked collection is 22.12.
   assert.equal(noBio.events.at(-1)?.date, '2026-12-22');

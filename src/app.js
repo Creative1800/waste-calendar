@@ -280,7 +280,7 @@ function renderPreview() {
   tbody.innerHTML = '';
 
   const renewalDates = new Set(
-    built?.events.filter((e) => e.title.startsWith('⚠️')).map((e) => e.date) ?? [],
+    built?.events.filter((e) => e.kind === 'renewal').map((e) => e.date) ?? [],
   );
 
   for (const day of days) {

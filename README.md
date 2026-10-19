@@ -52,7 +52,10 @@ Calendar), and in Samsung Calendar.
 ## What it produces
 
 - One all-day event per collection day. Types collected on the same day merge
-  into a single event, so `🟢 Sklo + 🟤 Bio` is one notification, not two.
+  into a single event, so `Zber odpadu: 🟢 Sklo + 🟤 Bio` is one notification,
+  not two. Every title carries that prefix: a lock screen reading only `🟤 Bio`
+  explains nothing to someone who has forgotten this calendar exists, which is
+  everyone for most of the year.
 - A check screen in two halves: the same type × month table the leaflet prints,
   for reading next to the paper copy, and an editable list below it for fixing
   anything wrong. Dates read `13.10.2026` whatever language the browser is set
