@@ -3,11 +3,14 @@
  * Renders events as an RFC 5545 iCalendar file.
  *
  * Events are all-day on the collection day, with an alarm six hours before
- * midnight -- i.e. 18:00 the previous evening. Apple Calendar honours that
- * alarm on import. Google does not: it discards it and applies the destination
- * calendar's own default notification (confirmed on import, 19 October 2026),
- * which is why each person must set a per-calendar reminder of their own. The
- * alarm stays in the file for the calendars that do read it.
+ * midnight -- i.e. 18:00 the previous evening.
+ *
+ * Do not count on that alarm reaching anyone. Importing a file that asked for
+ * a different time (19 October 2026) produced a reminder at the destination
+ * calendar's default instead, so something between the file and the phone
+ * substitutes it; which layer was never pinned down. Each person therefore
+ * sets a per-calendar reminder of their own, and this alarm is here only for
+ * the calendars that do read it.
  *
  * @typedef {{date: string, title: string, description: string, uid: string}} CalEvent
  */

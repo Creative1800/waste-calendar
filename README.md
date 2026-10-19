@@ -27,23 +27,25 @@ account sync.
 2. **Settings → Import & export → Import**, choose the `.ics`, and set the
    destination to that new calendar.
 3. Each person sets a **"1 day before, 18:00"** notification on that calendar in
-   their own app. This is required, not a fallback: **Google discards the alarm
-   carried in the imported file and applies the destination calendar's default
-   notification instead** (confirmed on import, 19 October 2026). For the yearly
-   calendar that is the behaviour we want — set the preference once and every
-   collection inherits it — but it does mean nobody can skip the step.
-   Notification settings in Google Calendar are also *personal*: your setting
-   does not propagate to anyone else. Apple Calendar does honour the embedded
-   alarm, which is why the file still carries one.
+   their own app. Treat this as required rather than as a fallback — see the
+   observation below. Notification settings are also *personal*: your setting
+   does not propagate to anyone else.
 4. Check each phone once: with the notification set, the next collection should
-   show its reminder in that person's own calendar app. Verified on 19 October
-   2026 — the reminder arrived on Samsung Calendar once the calendar's own
-   notification was set; the alarm carried in the file alone did not produce
-   one.
+   show its reminder in that person's own calendar app.
+
+**What was actually observed, 19 October 2026.** A test event whose file asked
+for an alarm at 16:30 was imported on a phone and read in Samsung Calendar. It
+showed the reminder at 18:00 the day before — the calendar's own default, not
+the time in the file — and only fired at 16:30 after that setting was changed
+by hand. Which layer substituted it was never established: the events may have
+landed in a Google calendar synced to the phone rather than a local Samsung
+one, and the two behave differently. The safe reading is the narrow one: **do
+not rely on the alarm inside the file; set the per-calendar notification.** The
+file still carries an alarm for the calendars that do honour it.
 
 The tool used to offer a downloadable test event with a chosen alarm time. It
-was removed: Google replaces the file's alarm with the calendar's default, so
-the test could only ever check a setting you had already made by hand.
+was removed once that substitution came to light: the test could only ever
+check a setting made by hand beforehand.
 
 One shared Google calendar renders natively in the Google Calendar app, in
 iPhone's built-in Calendar (once the Google account is added in iOS Settings →
