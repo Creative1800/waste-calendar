@@ -1,0 +1,17 @@
+{
+  "// note": "checkJs is intentionally off: files opt in with a `// @ts-check` comment, which keeps the minified vendored pdf.js out of the check while still fully checking our own code.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.js", "test/**/*.js", "tools/**/*.mjs"],
+  "exclude": ["node_modules", "vendor"]
+}

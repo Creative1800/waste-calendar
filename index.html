@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalendár zberu odpadu</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #15181d;
+    --muted: #5c6672;
+    --line: #dfe3e8;
+    --accent: #1f6feb;
+    --accent-text: #ffffff;
+    --warn-bg: #fff8e1;
+    --warn-line: #e0b949;
+    --warn-text: #5c4500;
+    --danger: #b3261e;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1216;
+      --card: #171b21;
+      --text: #e6e9ee;
+      --muted: #9aa4b2;
+      --line: #2a313a;
+      --accent: #4c8dff;
+      --accent-text: #0b0e12;
+      --warn-bg: #2e2510;
+      --warn-line: #7a6320;
+      --warn-text: #f0d79a;
+      --danger: #ff6b61;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 24px; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  section[hidden] { display: none; }
+  h2 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  #drop {
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  #drop:hover, #drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  #drop p { margin: 4px 0; }
+  #drop .hint { color: var(--muted); font-size: 0.875rem; }
+  input[type=file] { display: none; }
+  .routes { display: grid; gap: 10px; }
+  .route {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    cursor: pointer;
+  }
+  .route:has(input:checked) {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .route-head { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .streets { color: var(--muted); font-size: 0.8125rem; margin: 6px 0 0 24px; }
+  .types { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .types label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line); }
+  th { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td.day { color: var(--muted); white-space: nowrap; }
+  tr.past { opacity: 0.45; }
+  tr.renewal td { color: var(--warn-text); background: var(--warn-bg); }
+  input[type=date], select {
+    font: inherit;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 1px 4px 1px 8px;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .chip button {
+    border: 0; background: none; color: var(--muted);
+    cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 3px;
+  }
+  .chip button:hover { color: var(--danger); }
+  .add { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  button.primary, button.secondary {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 10px 16px; border: 1px solid var(--accent);
+  }
+  button.primary { background: var(--accent); color: var(--accent-text); }
+  button.secondary { background: transparent; color: var(--accent); }
+  button.small {
+    font: inherit; font-size: 0.875rem; cursor: pointer;
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .stats { color: var(--muted); font-size: 0.875rem; margin: 0 0 12px; }
+  .warn {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-line);
+    color: var(--warn-text);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .warn ul { margin: 6px 0 0; padding-left: 20px; }
+  .error { border-color: var(--danger); color: var(--danger); background: transparent; }
+  details { margin-top: 14px; font-size: 0.9375rem; }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  details ol { padding-left: 22px; }
+  details li { margin: 6px 0; }
+  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: 0.875em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kalendár zberu odpadu</h1>
+  <p class="lede">
+    Z PDF kalendára mesta Sabinov vyrobí súbor <code>.ics</code>, ktorý
+    naimportujete do zdieľaného kalendára. Dátumy skontrolujte pred stiahnutím.
+  </p>
+
+  <div id="problem" class="warn error" hidden></div>
+
+  <section id="step-file">
+    <h2>1 — PDF kalendár</h2>
+    <div id="drop" tabindex="0" role="button" aria-label="Vybrať PDF súbor">
+      <p><strong>Presuňte sem PDF</strong> alebo kliknite a vyberte súbor</p>
+      <p class="hint">Súbor sa nikam neposiela — spracuje sa priamo v prehliadači.</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf,.pdf">
+    <details>
+      <summary>Kde PDF získam?</summary>
+      <p>
+        Na stránke mesta v sekcii
+        <a href="https://www.sabinov.sk/navstevnik/aktuality" target="_blank" rel="noopener">Aktuality</a>
+        vyhľadajte oznam „Kalendár zberu odpadu“ a stiahnite priložené PDF.
+      </p>
+    </details>
+  </section>
+
+  <section id="step-route" hidden>
+    <h2>2 — Trasa</h2>
+    <div class="routes" id="routes"></div>
+  </section>
+
+  <section id="step-types" hidden>
+    <h2>3 — Druhy odpadu</h2>
+    <div class="types" id="type-filters"></div>
+  </section>
+
+  <section id="step-preview" hidden>
+    <h2>4 — Kontrola dátumov</h2>
+    <p class="stats" id="stats"></p>
+    <div id="warnings"></div>
+    <table>
+      <thead>
+        <tr><th>Dátum</th><th>Deň</th><th>Zber</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="add">
+      <input type="date" id="add-date" aria-label="Dátum nového zberu">
+      <select id="add-type" aria-label="Druh odpadu"></select>
+      <button class="small" id="add-btn" type="button">Pridať zber</button>
+    </div>
+  </section>
+
+  <section id="step-download" hidden>
+    <h2>5 — Stiahnutie a import</h2>
+    <div class="actions">
+      <button class="primary" id="download" type="button">Stiahnuť .ics</button>
+      <button class="secondary" id="download-test" type="button">Stiahnuť testovaciu udalosť</button>
+    </div>
+    <details>
+      <summary>Ako to naimportovať a nastaviť pripomienky</summary>
+      <ol>
+        <li>
+          V Google Kalendári na počítači vytvorte <strong>nový kalendár</strong>
+          (napr. „Zber odpadu“) a zdieľajte ho s domácnosťou.
+        </li>
+        <li>
+          <strong>Nastavenia → Import a export → Importovať</strong>, vyberte
+          stiahnutý <code>.ics</code> a ako cieľ zvoľte ten nový kalendár.
+        </li>
+        <li>
+          Každý člen domácnosti si v <em>svojej</em> aplikácii pri tomto
+          kalendári nastaví upozornenie <strong>1 deň predtým, 18:00</strong>.
+          Nastavenia upozornení sú osobné — neprenášajú sa z vášho telefónu.
+        </li>
+        <li>
+          Pred prvým importom odporúčame <em>testovaciu udalosť</em>: overte, že
+          upozornenie naozaj príde na všetkých telefónoch v domácnosti.
+        </li>
+      </ol>
+    </details>
+  </section>
+</main>
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "waste-calendar",
+  "version": "1.0.0",
+  "description": "Turns the Sabinov waste-collection leaflet PDF into an .ics calendar file",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "typecheck": "tsc --noEmit",
+    "start": "node tools/serve.mjs",
+    "fixture": "node tools/make-fixture.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "pdfjs-dist": "^4.10.38",
+    "typescript": "^5.7.2"
+  }
+}
