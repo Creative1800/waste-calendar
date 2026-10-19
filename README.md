@@ -50,7 +50,8 @@ Calendar), and in Samsung Calendar.
 
 ## Running it
 
-Hosted (GitHub Pages) is the normal path. Locally:
+Hosted at **<https://creative1800.github.io/waste-calendar/>** (GitHub Pages)
+is the normal path. Locally:
 
 ```sh
 npm start          # http://localhost:8080
