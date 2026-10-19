@@ -52,6 +52,79 @@ function readDate(text) {
   return parseSk(text, { year: state.schedule?.year ?? null });
 }
 
+// -- date fields -----------------------------------------------------------
+
+/**
+ * A date field: Slovak text you can read and type, plus a button that opens
+ * the browser's own picker.
+ *
+ * The text is the authority. A bare `<input type="date">` would be simpler,
+ * but browsers render it in their own locale -- an English-language Chrome
+ * shows 10/13/2026 for the 13th of October, which is exactly the confusion
+ * this table exists to prevent. So the picker is demoted to an input method:
+ * whatever it returns is written back as Slovak text.
+ *
+ * @param {string} value already-formatted Slovak date, or ''
+ * @param {string} label accessible name for the text input
+ * @returns {string} HTML
+ */
+function dateFieldHtml(value, label) {
+  return `<span class="date-field">
+    <input type="text" class="date" inputmode="numeric" placeholder="13.10.2026"
+           value="${value}" aria-label="${label}">
+    <span class="pick-wrap">
+      <button type="button" class="pick" title="Vybrať z kalendára"
+              aria-label="Vybrať dátum z kalendára">📅</button>
+      <input type="date" class="picker-anchor" tabindex="-1" aria-hidden="true">
+    </span>
+  </span>`;
+}
+
+/**
+ * Wires up a field built by {@link dateFieldHtml}.
+ *
+ * @param {HTMLElement} field the `.date-field` element
+ * @param {(iso: string) => void} commit called with a valid ISO date whenever
+ *   the field settles on one; never called for text that does not parse
+ */
+function wireDateField(field, commit) {
+  const text = /** @type {HTMLInputElement} */ (field.querySelector('input.date'));
+  const button = /** @type {HTMLButtonElement} */ (field.querySelector('button.pick'));
+  const anchor = /** @type {HTMLInputElement} */ (
+    field.querySelector('input.picker-anchor')
+  );
+
+  // Opening a picker programmatically needs showPicker(); without it there is
+  // nothing the button could do, so it goes away rather than lying.
+  if (typeof anchor.showPicker !== 'function') button.hidden = true;
+
+  // Mark bad text red as it is typed, but only commit once the field is left
+  // or Enter pressed -- re-rendering mid-keystroke would pull the input out
+  // from under the cursor.
+  text.addEventListener('input', () => {
+    text.classList.toggle('invalid', readDate(text.value) === null);
+  });
+  text.addEventListener('change', () => {
+    const iso = readDate(text.value);
+    if (iso === null) {
+      text.classList.add('invalid');
+      return;
+    }
+    commit(iso);
+  });
+
+  button.addEventListener('click', () => {
+    anchor.value = readDate(text.value) ?? '';
+    anchor.showPicker();
+  });
+  anchor.addEventListener('change', () => {
+    if (!anchor.value) return;
+    text.value = formatSk(anchor.value);
+    text.classList.remove('invalid');
+    commit(anchor.value);
+  });
+}
+
 /**
  * @param {string|null} message
  */
@@ -214,24 +287,11 @@ function renderPreview() {
     const tr = document.createElement('tr');
     if (day.date < today) tr.className = 'past';
     tr.innerHTML = `
-      <td><input type="text" class="date" inputmode="numeric"
-                 value="${formatSk(day.date)}" aria-label="Dátum zberu"></td>
+      <td>${dateFieldHtml(formatSk(day.date), 'Dátum zberu')}</td>
       <td class="day">${weekday(day.date)}</td>
       <td><div class="chips"></div></td>`;
 
-    const dateInput = /** @type {HTMLInputElement} */ (tr.querySelector('input'));
-    // Mark bad text red while it is being typed, but only move the collection
-    // once the field is left or Enter pressed -- re-rendering mid-keystroke
-    // would pull the input out from under the cursor.
-    dateInput.addEventListener('input', () => {
-      dateInput.classList.toggle('invalid', readDate(dateInput.value) === null);
-    });
-    dateInput.addEventListener('change', () => {
-      const next = readDate(dateInput.value);
-      if (next === null) {
-        dateInput.classList.add('invalid');
-        return;
-      }
+    wireDateField(/** @type {HTMLElement} */ (tr.querySelector('.date-field')), (next) => {
       for (const c of state.collections) {
         if (c.date === day.date) c.date = next;
       }
@@ -401,8 +461,17 @@ fileInput.addEventListener('change', () => {
   if (file) loadPdf(file);
 });
 
+$('add-date').innerHTML = dateFieldHtml('', 'Dátum nového zberu');
+wireDateField(/** @type {HTMLElement} */ ($('add-date').firstElementChild), () => {
+  // Nothing to commit until "Pridať zber" is pressed; the button reads the
+  // field itself.
+  showProblem(null);
+});
+
 $('add-btn').addEventListener('click', () => {
-  const dateInput = /** @type {HTMLInputElement} */ ($('add-date'));
+  const dateInput = /** @type {HTMLInputElement} */ (
+    $('add-date').querySelector('input.date')
+  );
   const typeSelect = /** @type {HTMLSelectElement} */ ($('add-type'));
   const date = readDate(dateInput.value);
   if (date === null) {

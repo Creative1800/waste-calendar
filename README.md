@@ -43,8 +43,9 @@ Calendar), and in Samsung Calendar.
   into a single event, so `🟢 Sklo + 🟤 Bio` is one notification, not two.
 - A check screen in two halves: the same type × month table the leaflet prints,
   for reading next to the paper copy, and an editable list below it for fixing
-  anything wrong. Both show dates as `13.10.2026`, and the table redraws from
-  your edits, so it always reflects what will be exported.
+  anything wrong. Dates read `13.10.2026` whatever language the browser is set
+  to, and each one has a 📅 button that opens the browser's own picker. The
+  table redraws from your edits, so it always reflects what will be exported.
 - Two reminders to fetch the next leaflet, placed 24 and 10 days before the last
   collection in the PDF. They are derived from the parsed data, so they cannot
   drift out of step with it.

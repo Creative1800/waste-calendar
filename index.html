@@ -111,6 +111,32 @@
     border-color: var(--danger);
     color: var(--danger);
   }
+  .date-field { display: inline-flex; align-items: center; gap: 4px; }
+  .pick-wrap { position: relative; display: inline-flex; }
+  button.pick {
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 6px;
+  }
+  button.pick:hover { border-color: var(--accent); }
+  /* The real date input, parked under the button: invisible, but still laid
+     out, so the browser's picker pops up in the right place. */
+  input.picker-anchor {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
   h3 {
     font-size: 0.8rem;
     text-transform: uppercase;
@@ -229,8 +255,8 @@
 
     <h3>Opraviť dátumy</h3>
     <p class="hint">
-      Dátum píšte ako <code>13.10.2026</code> (rok môžete vynechať). Zmeny sa
-      hneď prejavia v tabuľke vyššie.
+      Dátum píšte ako <code>13.10.2026</code> (rok môžete vynechať), alebo ho
+      vyberte z kalendára tlačidlom 📅. Zmeny sa hneď prejavia v tabuľke vyššie.
     </p>
     <table>
       <thead>
@@ -239,8 +265,7 @@
       <tbody id="rows"></tbody>
     </table>
     <div class="add">
-      <input type="text" class="date" id="add-date" inputmode="numeric"
-             placeholder="13.10.2026" aria-label="Dátum nového zberu">
+      <span id="add-date"></span>
       <select id="add-type" aria-label="Druh odpadu"></select>
       <button class="small" id="add-btn" type="button">Pridať zber</button>
     </div>
