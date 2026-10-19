@@ -35,13 +35,15 @@ account sync.
    Notification settings in Google Calendar are also *personal*: your setting
    does not propagate to anyone else. Apple Calendar does honour the embedded
    alarm, which is why the file still carries one.
-4. Before importing a full year, use **"Stiahnuť testovaciu udalosť"** to import
-   a single test event and confirm the alarm actually arrives on every phone.
-   Because Google substitutes its own notification, the time box next to the
-   button does not set when the reminder fires — it tells you which time to set
-   on the calendar, and the tool spells out the steps after the download.
-   Verified on 19 October 2026: with the calendar's notification set to that
-   time, the reminder arrived on Samsung Calendar.
+4. Check each phone once: with the notification set, the next collection should
+   show its reminder in that person's own calendar app. Verified on 19 October
+   2026 — the reminder arrived on Samsung Calendar once the calendar's own
+   notification was set; the alarm carried in the file alone did not produce
+   one.
+
+The tool used to offer a downloadable test event with a chosen alarm time. It
+was removed: Google replaces the file's alarm with the calendar's default, so
+the test could only ever check a setting you had already made by hand.
 
 One shared Google calendar renders natively in the Google Calendar app, in
 iPhone's built-in Calendar (once the Google account is added in iOS Settings →

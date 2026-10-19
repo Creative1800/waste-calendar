@@ -181,21 +181,6 @@
     border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
   }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .test-time {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-    font-size: 0.875rem;
-  }
-  .test-time input {
-    font: inherit;
-    padding: 4px 6px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--bg);
-    color: var(--text);
-  }
   .stats { color: var(--muted); font-size: 0.875rem; margin: 0 0 12px; }
   .warn {
     background: var(--warn-bg);
@@ -207,7 +192,6 @@
   }
   .warn ul, .warn ol { margin: 6px 0 0; padding-left: 20px; }
   .warn li { margin: 4px 0; }
-  #test-steps { margin: 14px 0 0; }
   .error { border-color: var(--danger); color: var(--danger); background: transparent; }
   details { margin-top: 14px; font-size: 0.9375rem; }
   details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
@@ -292,13 +276,7 @@
     <h2>5 — Stiahnutie a import</h2>
     <div class="actions">
       <button class="primary" id="download" type="button">Stiahnuť .ics</button>
-      <button class="secondary" id="download-test" type="button">Stiahnuť testovaciu udalosť</button>
-      <label class="test-time">
-        čas overenia
-        <input type="time" id="test-time" value="16:30" aria-label="Čas testovacieho upozornenia">
-      </label>
     </div>
-    <div id="test-steps" class="warn" hidden></div>
     <details>
       <summary>Ako to naimportovať a nastaviť pripomienky</summary>
       <ol>
@@ -316,8 +294,9 @@
           Nastavenia upozornení sú osobné — neprenášajú sa z vášho telefónu.
         </li>
         <li>
-          Pred prvým importom odporúčame <em>testovaciu udalosť</em>: overte, že
-          upozornenie naozaj príde na všetkých telefónoch v domácnosti.
+          Tento krok nejde preskočiť: Google pri importe zahodí upozornenie zo
+          súboru a použije nastavenie kalendára. Kto si ho nenastaví, nedostane
+          žiadne upozornenie.
         </li>
       </ol>
     </details>
