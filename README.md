@@ -32,6 +32,9 @@ account sync.
    honoured by Apple Calendar but not reliably by Google.
 4. Before importing a full year, use **"Stiahnuť testovaciu udalosť"** to import
    a single test event and confirm the alarm actually arrives on every phone.
+   The time box next to the button sets when it fires today, so the check takes
+   minutes rather than waiting until evening. Checked on 19 October 2026: the
+   test reminder arrived on Samsung Calendar.
 
 One shared Google calendar renders natively in the Google Calendar app, in
 iPhone's built-in Calendar (once the Google account is added in iOS Settings →
@@ -48,7 +51,9 @@ Calendar), and in Samsung Calendar.
   table redraws from your edits, so it always reflects what will be exported.
 - Two reminders to fetch the next leaflet, placed 24 and 10 days before the last
   collection in the PDF. They are derived from the parsed data, so they cannot
-  drift out of step with it.
+  drift out of step with it, and they carry both links needed to act on them —
+  the city's news page and this tool — because by the time one fires, a year
+  has passed and neither is still to hand.
 - Stable `UID`s per route and date, so re-importing a regenerated file updates
   existing events rather than duplicating them, wherever the calendar honours
   UIDs.

@@ -11,6 +11,14 @@ import { formatSk } from './sk-date.js';
 /** Where the city publishes each new leaflet. */
 export const CITY_NEWS_URL = 'https://www.sabinov.sk/navstevnik/aktuality';
 
+/**
+ * Where this tool lives. It goes in the reminder because the reminder arrives
+ * a year after anyone last thought about any of this: by then the leaflet's
+ * source and the thing that converts it are both details you would otherwise
+ * have to go and find again.
+ */
+export const TOOL_URL = 'https://creative1800.github.io/waste-calendar/';
+
 /** Days before the final collection on which to nag. */
 const DEFAULT_LEAD_DAYS = [24, 10];
 
@@ -49,8 +57,11 @@ export function renewalEvents(lastCollectionDate, options = {}) {
     description: [
       `Posledný zber podľa súčasného kalendára je ${formatSk(lastCollectionDate)}.`,
       '',
-      'Stiahnite nový kalendár zberu z webu mesta a vygenerujte nový .ics súbor:',
+      '1. Stiahnite nový leták z webu mesta:',
       CITY_NEWS_URL,
+      '',
+      '2. Vyrobte z neho nový .ics a naimportujte ho do tohto kalendára:',
+      TOOL_URL,
       '',
       index === all.length - 1
         ? 'Toto je posledná pripomienka.'

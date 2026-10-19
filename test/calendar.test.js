@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { parseSchedule } from '../src/parse-schedule.js';
 import { groupByDate } from '../src/group-events.js';
-import { renewalEvents } from '../src/renewal.js';
+import { renewalEvents, CITY_NEWS_URL, TOOL_URL } from '../src/renewal.js';
 import { buildIcs, foldLine, escapeText, alarmTrigger } from '../src/ics.js';
 import { buildCalendar } from '../src/build-calendar.js';
 import { eventTitle } from '../src/labels.js';
@@ -69,6 +69,14 @@ test('renewal reminders land 24 and 10 days before the last collection', () => {
   );
   assert.ok(nags[0].description.includes('31.12.2026'));
   assert.ok(nags[1].description.includes('posledná pripomienka'));
+});
+
+test('renewal reminders carry both links needed to act on them', () => {
+  const [nag] = renewalEvents('2026-12-31');
+  // The leaflet comes from the city; the .ics comes from this tool. A reminder
+  // naming only one of them leaves you hunting for the other a year from now.
+  assert.ok(nag.description.includes(CITY_NEWS_URL), 'missing the city news link');
+  assert.ok(nag.description.includes(TOOL_URL), 'missing the tool link');
 });
 
 test('a renewal reminder is dropped if it would predate the schedule', () => {
