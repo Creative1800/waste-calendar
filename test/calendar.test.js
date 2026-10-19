@@ -7,7 +7,7 @@ import path from 'node:path';
 import { parseSchedule } from '../src/parse-schedule.js';
 import { groupByDate } from '../src/group-events.js';
 import { renewalEvents } from '../src/renewal.js';
-import { buildIcs, foldLine, escapeText } from '../src/ics.js';
+import { buildIcs, foldLine, escapeText, alarmTrigger } from '../src/ics.js';
 import { buildCalendar } from '../src/build-calendar.js';
 import { eventTitle } from '../src/labels.js';
 
@@ -201,4 +201,30 @@ test('the generated Trasa 2 calendar is valid, complete iCalendar text', () => {
   for (const physical of ics.split('\r\n')) {
     assert.ok(Buffer.byteLength(physical, 'utf8') <= 75, `too long: ${physical}`);
   }
+});
+
+// -- alarm time -------------------------------------------------------------
+
+test('alarmTrigger converts a wall-clock time into an offset from midnight', () => {
+  assert.equal(alarmTrigger('18:00'), '-PT6H');
+  assert.equal(alarmTrigger('16:30'), '-PT7H30M');
+  assert.equal(alarmTrigger('07:05'), '-PT16H55M');
+});
+
+test('alarmTrigger handles the ends of the day', () => {
+  assert.equal(alarmTrigger('00:00'), 'PT0S');
+  assert.equal(alarmTrigger('23:59'), '-PT1M');
+});
+
+test('alarmTrigger rejects malformed times', () => {
+  assert.throws(() => alarmTrigger('25:00'));
+  assert.throws(() => alarmTrigger('abc'));
+});
+
+test('buildIcs uses a caller-supplied alarm trigger', () => {
+  const ics = buildIcs(
+    [{ date: '2026-10-20', title: 'T', description: 'd', uid: 'u@x' }],
+    { calendarName: 'c', alarmTrigger: '-PT7H30M' },
+  );
+  assert.ok(ics.includes('TRIGGER:-PT7H30M'));
 });

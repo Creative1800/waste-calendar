@@ -16,7 +16,7 @@ import { buildGrid } from './grid.js';
 import { formatSk, parseSk } from './sk-date.js';
 import { WASTE_LABELS, MONTH_NAMES_SK, eventTitle } from './labels.js';
 import { buildCalendar } from './build-calendar.js';
-import { buildIcs } from './ics.js';
+import { buildIcs, alarmTrigger } from './ics.js';
 
 const $ = /** @type {(id: string) => HTMLElement} */ (
   (id) => /** @type {HTMLElement} */ (document.getElementById(id))
@@ -408,26 +408,44 @@ function downloadCalendar() {
  * app can be checked before importing a whole year of events.
  */
 function downloadTestEvent() {
+  const time = /** @type {HTMLInputElement} */ ($('test-time')).value || '18:00';
+  /** @type {string} */
+  let trigger;
+  try {
+    trigger = alarmTrigger(time);
+  } catch {
+    showProblem('Zadajte čas upozornenia v tvare 16:30.');
+    return;
+  }
+  showProblem(null);
+
+  // The event is tomorrow and the alarm counts back from its midnight, so the
+  // alarm lands at the chosen time today -- soon enough to watch it arrive.
   const tomorrow = new Date();
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-  const date = tomorrow.toISOString().slice(0, 10);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const date = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(
+    2,
+    '0',
+  )}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
   const ics = buildIcs(
     [
       {
         date,
         title: `TEST — ${eventTitle(['TKO'])}`,
         description: [
-          'Testovacia udalosť. Overte, či upozornenie prišlo dnes o 18:00.',
+          `Testovacia udalosť. Overte, či upozornenie prišlo dnes o ${time}.`,
           '',
           'Ak neprišlo, nastavte pri tomto kalendári upozornenie',
-          '„1 deň predtým, 18:00“ v aplikácii na svojom telefóne.',
+          `„1 deň predtým, ${time}“ v aplikácii na svojom telefóne —`,
+          'Google upozornenia zo súboru spoľahlivo nepreberá.',
           '',
           'Túto udalosť potom zmažte.',
         ].join('\n'),
         uid: `sabinov-test-${Date.now()}@waste-calendar.sabinov`,
       },
     ],
-    { calendarName: 'Zber odpadu — test' },
+    { calendarName: 'Zber odpadu — test', alarmTrigger: trigger },
   );
   download('zber-odpadu-test.ics', ics);
 }

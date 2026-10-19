@@ -15,6 +15,34 @@ const PRODID = '-//waste-calendar//Sabinov//SK';
 /** Alarm offset from the start of the all-day event: 18:00 the day before. */
 const ALARM_TRIGGER = '-PT6H';
 
+/**
+ * Turns a wall-clock time into the alarm offset for an all-day event.
+ *
+ * An all-day event starts at midnight, so an alarm at 18:00 the evening before
+ * is six hours before the start. Calendar apps resolve that against the
+ * viewer's own local midnight, which is what we want: everyone is told the
+ * evening before their own collection day.
+ *
+ * @param {string} timeOfDay "HH:MM", 24-hour
+ * @returns {string} an RFC 5545 duration, e.g. "-PT7H30M"
+ * @throws {RangeError} if the time is not a real time of day
+ */
+export function alarmTrigger(timeOfDay) {
+  const match = /^(\d{2}):(\d{2})$/.exec(timeOfDay ?? '');
+  const hours = match ? Number(match[1]) : NaN;
+  const minutes = match ? Number(match[2]) : NaN;
+  if (!match || hours > 23 || minutes > 59) {
+    throw new RangeError(`Not a time of day: ${timeOfDay}`);
+  }
+
+  const before = 24 * 60 - (hours * 60 + minutes);
+  if (before === 24 * 60) return 'PT0S'; // midnight: the start itself
+
+  const h = Math.floor(before / 60);
+  const m = before % 60;
+  return `-PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`;
+}
+
 const encoder = new TextEncoder();
 
 /**
@@ -96,11 +124,12 @@ function toIcsStamp(date) {
  * Builds the .ics text.
  *
  * @param {CalEvent[]} events
- * @param {{calendarName: string, now?: Date}} options
+ * @param {{calendarName: string, now?: Date, alarmTrigger?: string}} options
  * @returns {string}
  */
 export function buildIcs(events, options) {
   const stamp = toIcsStamp(options.now ?? new Date());
+  const trigger = options.alarmTrigger ?? ALARM_TRIGGER;
   /** @type {string[]} */
   const lines = [
     'BEGIN:VCALENDAR',
@@ -122,7 +151,7 @@ export function buildIcs(events, options) {
       `DESCRIPTION:${escapeText(event.description)}`,
       'TRANSP:TRANSPARENT',
       'BEGIN:VALARM',
-      `TRIGGER:${ALARM_TRIGGER}`,
+      `TRIGGER:${trigger}`,
       'ACTION:DISPLAY',
       `DESCRIPTION:${escapeText(event.title)}`,
       'END:VALARM',

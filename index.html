@@ -181,6 +181,21 @@
     border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
   }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .test-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .test-time input {
+    font: inherit;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+  }
   .stats { color: var(--muted); font-size: 0.875rem; margin: 0 0 12px; }
   .warn {
     background: var(--warn-bg);
@@ -276,6 +291,10 @@
     <div class="actions">
       <button class="primary" id="download" type="button">Stiahnuť .ics</button>
       <button class="secondary" id="download-test" type="button">Stiahnuť testovaciu udalosť</button>
+      <label class="test-time">
+        upozorniť dnes o
+        <input type="time" id="test-time" value="16:30" aria-label="Čas testovacieho upozornenia">
+      </label>
     </div>
     <details>
       <summary>Ako to naimportovať a nastaviť pripomienky</summary>
